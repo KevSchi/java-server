@@ -35,6 +35,7 @@ public class Client {
 	private static JTextField placeholder = null;
 	
 	private static PrintWriter output = null;
+	private static JSONObject json = null;;
 	
 	public static void main(String[] args) {
 		if(createFrame) {
@@ -58,27 +59,30 @@ public class Client {
 	        connectBtn.addActionListener(new ActionListener(){
 	        	@SuppressWarnings("unchecked")
 				public void actionPerformed(ActionEvent e){
-	        		if(e.getSource() == connectBtn) {
-	        			SERVER_IP = addressInput.getText();
-	        			SERVER_PORT = Integer.parseInt(portInput.getText());
-	        			username = usernameInput.getText();
-	        			try {
-							socket = new Socket(SERVER_IP, SERVER_PORT);
-							
-							ServerConnection serverConn = new ServerConnection(socket, chatBox);
-		        			new Thread(serverConn).start();
-		 
-			        		JSONObject json = new JSONObject();
-			        		message = messageInput.getText();
-			        		json.put("username", username);
-			        		json.put("message", message);
-			        		
-		        			output = new PrintWriter(socket.getOutputStream(), true);
-			    			output.println(json);
-						} catch (IOException e1) {
-							chatBox.setText("No Server found (check PORT)!");
-						}
-	        		}
+	        		SERVER_IP = addressInput.getText();
+	        		SERVER_PORT = Integer.parseInt(portInput.getText());
+	        		username = usernameInput.getText();
+	        		try {
+						socket = new Socket(SERVER_IP, SERVER_PORT);
+						
+						ServerConnection serverConn = new ServerConnection(socket, chatBox);
+		        		new Thread(serverConn).start();
+		        		
+		        		try {
+			        		json = new JSONObject();
+				        	message = messageInput.getText();
+				        	json.put("username", username);
+				        	json.put("message", message);
+				        	
+			        		output = new PrintWriter(socket.getOutputStream(), true);
+				    		output.println(json);
+		        		}
+		        		catch(Error e1) {
+		        			System.out.println(e1);
+		        		}
+					} catch (IOException e1) {
+						chatBox.setText("No Server found (check PORT)!");
+					}
 	        	}
 	        });
 	        
@@ -95,15 +99,20 @@ public class Client {
 	        sendBtn.addActionListener(new ActionListener(){
 	        	@SuppressWarnings("unchecked")
 				public void actionPerformed(ActionEvent e){
-	        		if(e.getSource() == sendBtn) {
-	        			JSONObject json = new JSONObject();
-	        			message = messageInput.getText();
-	        			json.put("message", message);
-						try {
-							output = new PrintWriter(socket.getOutputStream(), true);
-		    				output.println(json);
-						} catch (IOException e1) {}
-	        		}
+	        		if(socket != null) {
+	        			if(e.getSource() == sendBtn) {
+	        				JSONObject json = new JSONObject();
+	        				message = messageInput.getText();
+	        				json.put("message", message);
+	        				try {
+	        					output = new PrintWriter(socket.getOutputStream(), true);
+	        					output.println(json);
+
+	        				} catch (IOException e1) {}
+	        			}
+	        		}else {
+						chatBox.setText("You arn't connected to  a Server!");
+					}
 	        	}
 	        });
 	        
@@ -113,15 +122,13 @@ public class Client {
 	        
 	        cFrame.addWindowListener(new WindowListener() {
 	        	public void windowClosing(WindowEvent e){
-	        		try {
-	        			//out.close();
-	        			JSONObject json = new JSONObject();
-	        			json.put("message","wow");
-	        			output.println("json");
-						socket.close();
-					} catch (IOException e1) {}
-	        		System.out.println("terminating program...");
-		        	System.exit(0);
+	        		if(socket != null) {
+	        			try {
+	        				socket.close();
+	        			} catch (IOException e1) {}
+	        			System.out.println("terminating program...");
+	        			System.exit(0);
+	        		}
 		        }
 				@Override
 				public void windowOpened(WindowEvent e) {
