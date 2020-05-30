@@ -1,6 +1,7 @@
 import java.net.*;
 
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
 
 //import org.json.simple.JSONObject;
 //import org.json.simple.parser.JSONParser;
@@ -19,7 +20,7 @@ public class ServerConnection implements Runnable{
 		try {
 			input = new BufferedReader(new InputStreamReader(server.getInputStream()));
 			System.out.println("Connecetion established!");
-			chatBox.setText(chatBox.getText() + "Connecetion established!\n");
+			chatBox.insert("Connecetion established!\n", 0);
 			//output = new PrintWriter(server.getOutputStream(),true);
 		} catch(IOException e) {
 			System.out.println(e);
@@ -33,7 +34,7 @@ public class ServerConnection implements Runnable{
 					String serverResponse = input.readLine();
 					if(serverResponse == null) break;
 					System.out.println(serverResponse);
-					chatBox.setText(chatBox.getText() + serverResponse +"\n");
+					chatBox.insert(serverResponse +"\n", 0);
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

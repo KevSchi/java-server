@@ -6,7 +6,11 @@ import java.io.*;
 import java.net.*;
 
 import javax.swing.*;
+
 //build-path -> add external archievs
+
+import javax.swing.text.DefaultCaret;
+
 import org.json.simple.JSONObject;
 
 public class Client {
@@ -81,7 +85,7 @@ public class Client {
 		        			System.out.println(e1);
 		        		}
 					} catch (IOException e1) {
-						chatBox.setText("No Server found (check PORT)!");
+						chatBox.setText("No Server found (check PORT)!\n");
 					}
 	        	}
 	        });
